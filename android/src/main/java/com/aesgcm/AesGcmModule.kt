@@ -26,7 +26,7 @@ class AesGcmModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  fun encrypt(plainText: String, promise: Promise): String {
+  fun encrypt(plainText: String, promise: Promise) {
     try {
       val iv = ByteArray(GCM_IV_LENGTH)
       SecureRandom().nextBytes(iv)
@@ -34,7 +34,7 @@ class AesGcmModule(reactContext: ReactApplicationContext) :
       val cipher = Cipher.getInstance("AES/GCM/NoPadding")
       cipher.init(
         Cipher.ENCRYPT_MODE,
-        SecretKeySpec(ENCODE_REQUEST_SECRET, "AES"),
+        SecretKeySpec(ENCODE_REQUEST_SECRET.toByteArray(), "AES"),
         GCMParameterSpec(GCM_TAG_LENGTH * 8, iv)
       )
 
@@ -54,7 +54,7 @@ class AesGcmModule(reactContext: ReactApplicationContext) :
   }
 
   private fun ByteArray.encodeBase64(): String {
-    return java.util.Base64.getEncoder().encodeToString(this)
+    return Base64.getEncoder().encodeToString(this)
   }
 
   companion object {
