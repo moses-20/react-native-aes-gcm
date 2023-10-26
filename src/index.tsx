@@ -20,3 +20,7 @@ const AesGcm = NativeModules.AesGcm
 export function multiply(a: number, b: number): Promise<number> {
   return AesGcm.multiply(a, b);
 }
+
+export function encrypt(text: string): Promise<string> {
+  return AesGcm.encrypt(text);
+}
