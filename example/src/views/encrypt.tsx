@@ -8,41 +8,47 @@ import {
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { encrypt } from 'react-native-aes-gcm';
-
-interface StateData {
-  secret: string;
-  text: string;
-  encrypted?: string;
-}
+import { useAppContext } from '../context/app.context';
+import type { AppStateAction } from '../context/types';
 
 export default function EncryptView() {
-  const [data, setData] = useState<StateData>({
-    secret: '',
-    text: '',
-    encrypted: undefined,
-  });
+  const { state, dispatch } = useAppContext();
+  const [encrypted, setEncrypted] = useState<string>('');
+  const [text, setText] = useState<string>('');
 
   const handleEncrypt = async (t: string) => {
-    if (data.secret.length === 16 && t !== '') {
-      const res = await encrypt(t, data.secret);
+    if (state.secret.length === 16 && t !== '') {
+      const res = await encrypt(t, state.secret);
 
       if (res) {
-        setData((prev) => ({ ...prev, encrypted: res }));
+        setEncrypted(res);
       }
     } else {
-      setData((prev) => ({ ...prev, encrypted: undefined }));
+      setEncrypted('');
     }
-  };
-
-  const handleChange = (key: keyof StateData, value: string) => {
-    setData({ ...data, [key]: value });
-    handleEncrypt(value);
   };
 
   const handlePress = () => {
-    if (data.encrypted !== undefined) {
-      Clipboard.setString(data.encrypted);
+    if (encrypted !== undefined) {
+      Clipboard.setString(encrypted);
     }
+  };
+
+  const handleSecretChange = (value: string) => {
+    const action: AppStateAction = {
+      type: 'SET_SECRET',
+      payload: {
+        secret: value,
+      },
+    };
+
+    handleEncrypt(text);
+    dispatch(action);
+  };
+
+  const handleTextChange = (value: string) => {
+    handleEncrypt(value);
+    setText(value);
   };
 
   return (
@@ -52,11 +58,12 @@ export default function EncryptView() {
       <View>
         <Text style={styles.label}>Secret key</Text>
         <TextInput
-          value={data.secret}
+          value={state.secret}
           autoCorrect={false}
           autoCapitalize="none"
           autoComplete="off"
-          onChangeText={(value) => handleChange('secret', value)}
+          onChange={({ nativeEvent }) => handleSecretChange(nativeEvent.text)}
+          // onChangeText={handleSecretChange}
           style={styles.input}
           placeholder="Enter secret key"
           maxLength={16}
@@ -67,21 +74,22 @@ export default function EncryptView() {
       <View>
         <Text style={styles.label}>Text to encrypt</Text>
         <TextInput
-          value={data.text}
+          value={text}
           autoCorrect={false}
           autoCapitalize="none"
           autoComplete="off"
-          onChangeText={(value) => handleChange('text', value)}
+          onChange={({ nativeEvent }) => handleTextChange(nativeEvent.text)}
+          // onChangeText={handleTextChange}
           style={styles.input}
           placeholder="Enter text to encrypt"
         />
       </View>
 
-      {data.encrypted && (
+      {encrypted && (
         <View>
           <Text style={styles.label}>Encrypted Text</Text>
           <View style={styles.encryptedField}>
-            <Text>{data.encrypted}</Text>
+            <Text>{encrypted}</Text>
 
             <TouchableOpacity onPress={handlePress} style={styles.btn}>
               <Text style={styles.btnText}>Copy Encrypted Text</Text>
@@ -96,7 +104,6 @@ export default function EncryptView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: 'red',
   },
   input: {
     width: 320,

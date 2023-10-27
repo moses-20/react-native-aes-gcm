@@ -8,55 +8,62 @@ import {
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import { decrypt } from 'react-native-aes-gcm';
-
-interface StateData {
-  secret: string;
-  text: string;
-  decrypted?: string;
-}
+import { useAppContext } from '../context/app.context';
+import type { AppStateAction } from '../context/types';
 
 export default function DecryptView() {
-  const [data, setData] = useState<StateData>({
-    secret: '',
-    text: '',
-    decrypted: undefined,
-  });
+  const { state, dispatch } = useAppContext();
+  const [decrypted, setDecrypted] = useState<string>('');
+  const [text, setText] = useState<string>('');
 
-  const handleDecrypt = async () => {
-    if (data.secret.length === 16 && data.text !== '') {
-      const res = await decrypt(data.text, data.secret);
+  const handleDecrypt = async (t: string) => {
+    if (state.secret.length === 16 && t !== '') {
+      const res = await decrypt(t, state.secret);
 
       if (res) {
-        setData((prev) => ({ ...prev, decrypted: res }));
+        setDecrypted(res);
       }
     } else {
-      setData((prev) => ({ ...prev, decrypted: undefined }));
+      setDecrypted('');
     }
-  };
-
-  const handleChange = (key: keyof StateData, value: string) => {
-    setData({ ...data, [key]: value });
-    handleDecrypt();
   };
 
   const handlePress = () => {
-    if (data.decrypted !== undefined) {
-      Clipboard.setString(data.decrypted);
+    if (decrypted !== undefined) {
+      Clipboard.setString(decrypted);
     }
+  };
+
+  const handleSecretChange = (value: string) => {
+    const action: AppStateAction = {
+      type: 'SET_SECRET',
+      payload: {
+        secret: value,
+      },
+    };
+
+    handleDecrypt(text);
+    dispatch(action);
+  };
+
+  const handleTextChange = (value: string) => {
+    handleDecrypt(value);
+    setText(value);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}> Decryption </Text>
+      <Text style={styles.header}>Decryption</Text>
 
       <View>
-        <Text style={styles.label}>Secret Key</Text>
+        <Text style={styles.label}>Secret key</Text>
         <TextInput
-          value={data.secret}
+          value={state.secret}
           autoCorrect={false}
           autoCapitalize="none"
           autoComplete="off"
-          onChangeText={(value) => handleChange('secret', value)}
+          onChange={({ nativeEvent }) => handleSecretChange(nativeEvent.text)}
+          // onChangeText={handleSecretChange}
           style={styles.input}
           placeholder="Enter secret key"
           maxLength={16}
@@ -67,21 +74,22 @@ export default function DecryptView() {
       <View>
         <Text style={styles.label}>Text to decrypt</Text>
         <TextInput
-          value={data.text}
+          value={text}
           autoCorrect={false}
           autoCapitalize="none"
           autoComplete="off"
-          onChangeText={(value) => handleChange('text', value)}
+          onChange={({ nativeEvent }) => handleTextChange(nativeEvent.text)}
+          // onChangeText={handleTextChange}
           style={styles.input}
           placeholder="Enter text to encrypt"
         />
       </View>
 
-      {data.decrypted && (
+      {decrypted && (
         <View>
           <Text style={styles.label}>Encrypted Text</Text>
           <View style={styles.encryptedField}>
-            <Text>{data.decrypted}</Text>
+            <Text>{decrypted}</Text>
 
             <TouchableOpacity onPress={handlePress} style={styles.btn}>
               <Text style={styles.btnText}>Copy Decrypted Text</Text>
@@ -103,7 +111,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   input: {
-    width: 300,
+    width: 320,
     height: 40,
     marginBottom: 20,
     paddingHorizontal: 10,
@@ -120,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   encryptedField: {
-    width: 300,
+    width: 320,
     paddingVertical: 10,
     paddingHorizontal: 10,
     borderWidth: 1,
