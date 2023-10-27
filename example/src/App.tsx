@@ -1,31 +1,17 @@
-import * as React from 'react';
-
-import { StyleSheet, View, Text } from 'react-native';
-import { encrypt, multiply } from 'react-native-aes-gcm';
-
-const data = JSON.stringify({
-  msisdn: '+233240695050',
-});
+import React, { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import EncryptView from './views/encrypt';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-  const [encrypted, setEncrypted] = React.useState<string | undefined>();
-
-  React.useEffect(() => {
-    multiply(3, 7).then(setResult);
-  }, []);
-
-  React.useEffect(() => {
-    encrypt(data).then((res) => {
-      setEncrypted(res);
-      console.log('ENCODED: ', res);
-    });
-  }, []);
+  const [encrypt, setEncrypt] = useState(true);
 
   return (
     <View style={styles.container}>
-      <Text>Result: {JSON.stringify(result)}</Text>
-      <Text>Result: {JSON.stringify(encrypted)}</Text>
+      <Text style={styles.header}> React Native AES GCM </Text>
+      <Pressable style={styles.btn} onPress={() => setEncrypt(!encrypt)}>
+        <Text style={styles.btnText}>Switch</Text>
+      </Pressable>
+      <EncryptView />
     </View>
   );
 }
@@ -35,10 +21,27 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 60,
   },
-  box: {
-    width: 60,
-    height: 60,
+  header: {
+    fontWeight: 'bold',
     marginVertical: 20,
+    fontSize: 20,
+  },
+  btn: {
+    display: 'none',
+    width: 320,
+    backgroundColor: '#000',
+    color: '#fff',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 50,
+    textAlign: 'center',
+    cursor: 'pointer',
+  },
+  btnText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
 });

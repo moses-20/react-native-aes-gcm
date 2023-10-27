@@ -1,26 +1,17 @@
-import { NativeModules, Platform } from 'react-native';
+import AesGcm from './AesGcm';
 
-const LINKING_ERROR =
-  `The package 'react-native-aes-gcm' doesn't seem to be linked. Make sure: \n\n` +
-  Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
-  '- You rebuilt the app after installing the package\n' +
-  '- You are not using Expo Go\n';
-
-const AesGcm = NativeModules.AesGcm
-  ? NativeModules.AesGcm
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
-
-export function multiply(a: number, b: number): Promise<number> {
-  return AesGcm.multiply(a, b);
+export async function encrypt(data: string, secret: string): Promise<string> {
+  try {
+    return await AesGcm.encrypt(data, secret);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
-export function encrypt(text: string): Promise<string> {
-  return AesGcm.encrypt(text);
+export async function decrypt(data: string, secret: string): Promise<string> {
+  try {
+    return await AesGcm.decrypt(data, secret);
+  } catch (e) {
+    return Promise.reject(e);
+  }
 }
