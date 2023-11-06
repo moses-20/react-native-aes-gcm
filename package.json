@@ -1,5 +1,5 @@
 {
-  "name": "react-native-aes-gcm",
+  "name": "@moses-20/react-native-aes-gcm",
   "version": "0.1.1",
   "description": "AES encryption for react native using GCM",
   "main": "lib/commonjs/index",
