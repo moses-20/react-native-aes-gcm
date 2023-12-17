@@ -1,5 +1,5 @@
 {
-  "name": "@moses-20/react-native-aes-gcm",
+  "name": "@mosesgameli/react-native-aes-gcm",
   "version": "0.1.1",
   "description": "AES encryption for react native using GCM",
   "main": "lib/commonjs/index",
@@ -39,13 +39,13 @@
     "ios",
     "android"
   ],
-  "repository": "https://github.com/moses-20/react-native-aes-gcm",
-  "author": "Moses Gameli <mosesgameli20@gmail.com> (https://github.com/moses-20)",
+  "repository": "https://github.com/mosesgameli/react-native-aes-gcm",
+  "author": "Moses Gameli <mosesgameli20@gmail.com> (https://github.com/mosesgameli)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/moses-20/react-native-aes-gcm/issues"
+    "url": "https://github.com/mosesgameli/react-native-aes-gcm/issues"
   },
-  "homepage": "https://github.com/moses-20/react-native-aes-gcm#readme",
+  "homepage": "https://github.com/mosesgameli/react-native-aes-gcm#readme",
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },

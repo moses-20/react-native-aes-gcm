@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => "11.0" }
-  s.source       = { :git => "https://github.com/moses-20/react-native-aes-gcm.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/mosesgameli/react-native-aes-gcm.git", :tag => "#{s.version}" }
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
 
